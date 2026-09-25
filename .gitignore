@@ -1,0 +1,11 @@
+dataset/
+work/
+output/
+submissions/v*/
+*.zip
+__pycache__/
+*.pyc
+.DS_Store
+__MACOSX/
+.venv/
+.pytest_cache/
