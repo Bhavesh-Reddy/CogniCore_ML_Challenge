@@ -10,3 +10,7 @@ __MACOSX/
 .venv/
 .pytest_cache/
 *_student_resource/
+
+# local copy of the challenge bundle (dataset symlink target)
+student_resource/
+/dataset
