@@ -37,6 +37,21 @@ def write_id_list_tsv(path, header_col: str, s1_ids_in_order: Iterable[str],
             f.write(f"{s1}\t{','.join(ids)}\n")
 
 
+def peak_mem_gb() -> Optional[float]:
+    """Peak resident memory of this process in GB, or None if psutil is unavailable."""
+    try:
+        import psutil
+    except ImportError:
+        return None
+    info = psutil.Process().memory_info()
+    peak = getattr(info, "peak_wset", None) or getattr(info, "peak_rss", None)
+    if peak is None:  # Linux/macOS: ru_maxrss is KB on Linux, bytes on macOS
+        import resource
+        import sys
+        peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * (1 if sys.platform == "darwin" else 1024)
+    return round(peak / 2**30, 2)
+
+
 def load_test_s1_ids() -> List[str]:
     """All test S1 IDs in test_source1.tsv file order."""
     path = config.DATA_DIR / "test" / "test_source1.tsv"
