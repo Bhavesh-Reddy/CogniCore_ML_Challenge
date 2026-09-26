@@ -1,0 +1,34 @@
+{
+  "rows": {
+    "train_source1.tsv": 2206821,
+    "train_source2.tsv": 5034616,
+    "train_source3.tsv": 5285603,
+    "test_source1.tsv": 1732544,
+    "test_source2.tsv": 4887273,
+    "test_source3.tsv": 5082316,
+    "train_ground_truth.tsv": 2206821
+  },
+  "rows_match_facts": true,
+  "n_gt_pairs": 7638365,
+  "n_gt_pairs_s2": 3693619,
+  "n_gt_pairs_s3": 3944746,
+  "n_singletons": 123247,
+  "singleton_rate": 0.055848,
+  "mean_matches_per_s1": 3.4613,
+  "matches_per_s1_hist": {
+    "0": 123247,
+    "1": 119157,
+    "2": 375212,
+    "3": 530841,
+    "4": 484115,
+    "5": 321957,
+    "6": 164868,
+    "7": 63968,
+    "8": 18680,
+    "9": 4205,
+    "10": 534,
+    "11": 37
+  },
+  "elapsed_s": 174.2,
+  "peak_mem_gb": 2.54
+}
