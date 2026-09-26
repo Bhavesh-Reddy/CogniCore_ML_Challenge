@@ -20,7 +20,7 @@ import pyarrow.parquet as pq
 from anyascii import anyascii
 
 from . import config
-from .io_utils import peak_mem_gb
+from .io_utils import TreeMemWatch, peak_mem_gb
 
 CHUNK_ROWS = 500_000
 NORM = config.WORK / "norm"
@@ -216,19 +216,60 @@ def normalize_file(src, dst, limit: Optional[int], pool: Pool) -> int:
     return n_done
 
 
+def _share(mask: pd.Series) -> float:
+    return round(float(mask.mean()), 6) if len(mask) else None
+
+
+def write_stats() -> dict:
+    """Per split / source / country shares from the full work/norm outputs -> reports/normalize_stats.json."""
+    stats = {"runs": {}, "shares": {}}
+    for split in ("train", "test"):
+        run = NORM / f"_run_{split}.json"
+        if run.exists():
+            stats["runs"][split] = json.loads(run.read_text(encoding="utf-8"))
+        for k in (1, 2, 3):
+            path = NORM / f"{split}_s{k}.parquet"
+            if not path.exists():
+                continue
+            df = pd.read_parquet(path, columns=["country", "name_core", "addr_norm", "addr_first_num", "addr_admin"])
+            by = {}
+            for country, g in [("ALL", df)] + list(df.groupby("country")):
+                by[country] = {
+                    "rows": len(g),
+                    "empty_name_core": _share(g["name_core"] == ""),
+                    "empty_addr_norm": _share(g["addr_norm"] == ""),
+                    "has_addr_first_num": _share(g["addr_first_num"] != ""),
+                    "has_addr_admin": _share(g["addr_admin"] != ""),
+                }
+            stats["shares"][f"{split}_s{k}"] = by
+            del df
+    out = config.REPORTS / "normalize_stats.json"
+    out.write_text(json.dumps(stats, indent=2) + "\n", encoding="utf-8")
+    return stats
+
+
 def main() -> None:
+    global CHUNK_ROWS
     ap = argparse.ArgumentParser()
-    ap.add_argument("--split", choices=["train", "test"], required=True)
+    ap.add_argument("--split", choices=["train", "test"])
     ap.add_argument("--limit", type=int, default=None, help="rows per source file (dev runs)")
+    ap.add_argument("--chunk-rows", type=int, default=CHUNK_ROWS, help="rows per chunk (lower to save memory)")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--stats", action="store_true", help="only write reports/normalize_stats.json")
     args = ap.parse_args()
+    if args.stats:
+        print(json.dumps(write_stats(), indent=2))
+        return
+    if not args.split:
+        ap.error("--split is required unless --stats is given")
+    CHUNK_ROWS = args.chunk_rows
     out_dir = NORM / f"limit{args.limit}" if args.limit else NORM
     out_dir.mkdir(parents=True, exist_ok=True)
     _admin_table()
     print(f"normalize --split {args.split}: aliases {'loaded' if _ADMIN else 'not found, addr_admin empty'}, "
-          f"{config.N_JOBS} workers -> {out_dir}", flush=True)
-    t_all, rows_all = time.time(), 0
-    with Pool(config.N_JOBS) as pool:
+          f"{config.N_JOBS} workers, chunk {CHUNK_ROWS:,} rows -> {out_dir}", flush=True)
+    t_all, rows_all, files = time.time(), 0, {}
+    with TreeMemWatch() as mem, Pool(config.N_JOBS) as pool:
         for k in (1, 2, 3):
             dst = out_dir / f"{args.split}_s{k}.parquet"
             if dst.exists() and not args.force:
@@ -238,11 +279,20 @@ def main() -> None:
             n = normalize_file(config.WORK / "raw" / f"{args.split}_s{k}.parquet", dst, args.limit, pool)
             dt = time.time() - t
             rows_all += n
-            print(f"  {dst.name}: {n:,} rows in {dt:.1f}s ({n / dt:,.0f} rows/s)", flush=True)
+            files[dst.name] = {"rows": n, "elapsed_s": round(dt, 1), "rows_per_s": round(n / dt)}
+            print(f"  {dst.name}: {n:,} rows in {dt:.1f}s ({n / dt:,.0f} rows/s), "
+                  f"peak so far {mem.peak_gb:.2f} GB (all processes)", flush=True)
     dt = time.time() - t_all
     if rows_all:
-        print(f"normalize: {rows_all:,} rows in {dt:.1f}s ({rows_all / dt:,.0f} rows/s), "
-              f"peak memory (main process) {peak_mem_gb()} GB")
+        run = {"rows": rows_all, "elapsed_s": round(dt, 1), "rows_per_s": round(rows_all / dt),
+               "n_jobs": config.N_JOBS, "chunk_rows": CHUNK_ROWS, "peak_mem_gb_all_processes": mem.peak_gb,
+               "peak_mem_gb_main": peak_mem_gb(), "ram_gb": mem.total_gb,
+               "peak_share_of_ram": round(mem.peak_gb / mem.total_gb, 3) if mem.total_gb else None,
+               "files": files}
+        if not args.limit:
+            (NORM / f"_run_{args.split}.json").write_text(json.dumps(run, indent=2) + "\n", encoding="utf-8")
+        print(f"normalize: {rows_all:,} rows in {dt:.1f}s ({rows_all / dt:,.0f} rows/s), peak memory "
+              f"{mem.peak_gb} GB all processes = {run['peak_share_of_ram']:.0%} of {mem.total_gb} GB RAM")
 
 
 if __name__ == "__main__":
