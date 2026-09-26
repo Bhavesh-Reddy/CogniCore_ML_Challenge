@@ -13,5 +13,11 @@ BLOCK_CAP = 1000       # a blocking key group larger than this on either side is
 DUCKDB_MEMORY = "6GB"  # lower on small machines
 N_JOBS = max(1, os.cpu_count() - 2)
 
+# aliases.py (Step 2.1): admin-region aliases learned from matched train pairs
+ALIAS_SAMPLE = 300_000     # gt pairs sampled (seed SEED)
+ALIAS_MIN_COUNT = 50       # min co-occurrences for variant -> canonical, and min frequency of a canonical
+ALIAS_MIN_SHARE = 0.8      # count(v, c) must be at least this share of v's occurrences
+ALIAS_LAST_SHARE = 0.8     # an admin value is the LAST comma-part in at least this share of its records (states >= 0.90, cities <= 0.62 in train)
+
 for _d in (WORK, MODELS, REPORTS, OUTPUT):
     _d.mkdir(parents=True, exist_ok=True)
