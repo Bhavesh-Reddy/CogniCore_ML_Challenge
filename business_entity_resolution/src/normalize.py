@@ -106,51 +106,63 @@ ADDR_ABBR: Dict[str, str] = {
 }
 
 _ADMIN: Optional[Dict[str, str]] = None
-_ADMIN_MAX_TOKENS = 1
 
 
 def _admin_table() -> Dict[str, str]:
-    global _ADMIN, _ADMIN_MAX_TOKENS
+    global _ADMIN
     if _ADMIN is None:
         _ADMIN = json.loads(ALIASES.read_text(encoding="utf-8"))["admin"] if ALIASES.exists() else {}
-        _ADMIN_MAX_TOKENS = max((len(k.split()) for k in _ADMIN), default=1)
     return _ADMIN
 
 
-def split_admin(tokens, admin: Dict[str, str], max_len: int) -> Tuple[str, str]:
-    """Greedy longest match of alias phrases -> (addr_admin, addr_core)."""
-    if not admin:
-        return "", " ".join(tokens)
-    found, core, i = [], [], 0
-    while i < len(tokens):
-        for n in range(min(max_len, len(tokens) - i), 0, -1):
-            canon = admin.get(" ".join(tokens[i:i + n]))
-            if canon is not None:
-                if canon not in found:
-                    found.append(canon)
-                i += n
-                break
-        else:
-            core.append(tokens[i])
-            i += 1
-    return " ".join(found), " ".join(core)
+def part_admin(tokens, admin: Dict[str, str]):
+    """Admin value of one comma-part -> (canonical or None, per-token 'is admin' mask).
+
+    aliases.py learns whole comma-parts, so the whole part (ignoring pure-digit tokens, e.g. the zip in
+    "TX 75001") must equal an alias. "hauts de france" therefore never yields "de" (Delaware).
+    """
+    words = [t for t in tokens if not t.isdigit()]
+    canon = admin.get(" ".join(words)) if words else None
+    if canon is None:
+        return None, [False] * len(tokens)
+    return canon, [not t.isdigit() for t in tokens]
+
+
+def _addr_token(t: str) -> str:
+    if t.isdigit():
+        t = t.lstrip("0") or "0"
+    return ADDR_ABBR.get(t, t)
 
 
 @lru_cache(maxsize=2_000_000)
 def normalize_address(raw: str) -> Tuple[str, str, str, str, str, int]:
-    """(addr_norm, addr_core, addr_nums, addr_first_num, addr_admin, addr_empty)."""
-    tokens = []
-    for t in basic_clean(raw).split():
-        if t == "null":
-            continue
-        if t.isdigit():
-            t = t.lstrip("0") or "0"
-        tokens.append(ADDR_ABBR.get(t, t))
-    addr_norm = " ".join(tokens)
+    """(addr_norm, addr_core, addr_nums, addr_first_num, addr_admin, addr_empty).
+
+    Admin aliases are matched only on the last 2 non-empty comma-parts (basic_clean tokens), as whole
+    parts, exactly as aliases.py learned them. This keeps short codes such as "de", "la", "in" from firing
+    inside street or region names ("rue de la paix", "hauts de france").
+    """
+    parts = [p.split() for p in (basic_clean(x) for x in raw.split(",")) if p]
+    admin = _admin_table()
+    norm, core, found = [], [], []
+    for j, part in enumerate(parts):
+        mask = [False] * len(part)
+        if admin and j >= len(parts) - 2:
+            canon, mask = part_admin(part, admin)
+            if canon is not None and canon not in found:
+                found.append(canon)
+        for t, is_admin in zip(part, mask):
+            if t == "null":
+                continue
+            t = _addr_token(t)
+            norm.append(t)
+            if not is_admin:
+                core.append(t)
+    addr_norm = " ".join(norm)
     # every digit run, so house numbers like "155c" or "6b/79" still give 155 / 6
     nums = [m.lstrip("0") or "0" for m in _DIGITS.findall(addr_norm)]
-    addr_admin, addr_core = split_admin(tokens, _admin_table(), _ADMIN_MAX_TOKENS)
-    return addr_norm, addr_core, " ".join(nums), (nums[0] if nums else ""), addr_admin, int(not addr_norm)
+    return (addr_norm, " ".join(core), " ".join(nums), (nums[0] if nums else ""), " ".join(found),
+            int(not addr_norm))
 
 
 # ----------------------------------------------------------------------------- frames and CLI

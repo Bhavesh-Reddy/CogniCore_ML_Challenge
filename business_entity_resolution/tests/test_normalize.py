@@ -1,7 +1,7 @@
 import pandas as pd
 
 from business_entity_resolution.src.normalize import (
-    OUT_COLS, basic_clean, normalize_address, normalize_frame, normalize_name, split_admin)
+    OUT_COLS, basic_clean, normalize_address, normalize_frame, normalize_name, part_admin)
 
 
 def name(raw):
@@ -101,9 +101,11 @@ def test_numbers_and_ranges():
 
 def test_admin_split():
     admin = {"texas": "tx", "tx": "tx", "west bengal": "wb"}
-    assert split_admin("mack road haltom city texas".split(), admin, 2) == ("tx", "mack road haltom city")
-    assert split_admin("1 park street kolkata west bengal".split(), admin, 2) == ("wb", "1 park street kolkata")
-    assert split_admin("a b".split(), {}, 1) == ("", "a b")
+    assert part_admin(["texas"], admin) == ("tx", [True])
+    assert part_admin(["west", "bengal"], admin) == ("wb", [True, True])
+    assert part_admin(["tx", "75001"], admin) == ("tx", [True, False])  # zip stays in addr_core
+    assert part_admin(["haltom", "city", "texas"], admin) == (None, [False, False, False])  # whole part only
+    assert part_admin(["a", "b"], {}) == (None, [False, False])
 
 
 def test_normalize_frame_schema():
