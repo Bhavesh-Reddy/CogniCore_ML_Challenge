@@ -9,3 +9,4 @@ __pycache__/
 __MACOSX/
 .venv/
 .pytest_cache/
+*_student_resource/
