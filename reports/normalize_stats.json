@@ -1,0 +1,221 @@
+{
+  "runs": {
+    "train": {
+      "rows": 12527040,
+      "elapsed_s": 133.9,
+      "rows_per_s": 93576,
+      "n_jobs": 10,
+      "chunk_rows": 500000,
+      "peak_mem_gb_all_processes": 8.07,
+      "peak_mem_gb_main": 0.85,
+      "ram_gb": 15.7,
+      "peak_share_of_ram": 0.514,
+      "files": {
+        "train_s1.parquet": {
+          "rows": 2206821,
+          "elapsed_s": 20.6,
+          "rows_per_s": 107345
+        },
+        "train_s2.parquet": {
+          "rows": 5034616,
+          "elapsed_s": 56.3,
+          "rows_per_s": 89392
+        },
+        "train_s3.parquet": {
+          "rows": 5285603,
+          "elapsed_s": 55.7,
+          "rows_per_s": 94937
+        }
+      }
+    },
+    "test": {
+      "rows": 11702133,
+      "elapsed_s": 123.9,
+      "rows_per_s": 94413,
+      "n_jobs": 10,
+      "chunk_rows": 500000,
+      "peak_mem_gb_all_processes": 7.7,
+      "peak_mem_gb_main": 0.94,
+      "ram_gb": 15.7,
+      "peak_share_of_ram": 0.49,
+      "files": {
+        "test_s1.parquet": {
+          "rows": 1732544,
+          "elapsed_s": 17.5,
+          "rows_per_s": 98728
+        },
+        "test_s2.parquet": {
+          "rows": 4887273,
+          "elapsed_s": 47.8,
+          "rows_per_s": 102178
+        },
+        "test_s3.parquet": {
+          "rows": 5082316,
+          "elapsed_s": 57.2,
+          "rows_per_s": 88789
+        }
+      }
+    }
+  },
+  "shares": {
+    "train_s1": {
+      "ALL": {
+        "rows": 2206821,
+        "empty_name_core": 0.0,
+        "empty_addr_norm": 0.0,
+        "has_addr_first_num": 0.965091,
+        "has_addr_admin": 0.911531
+      },
+      "India": {
+        "rows": 883188,
+        "empty_name_core": 0.0,
+        "empty_addr_norm": 0.0,
+        "has_addr_first_num": 0.912775,
+        "has_addr_admin": 0.884746
+      },
+      "US": {
+        "rows": 1323633,
+        "empty_name_core": 0.0,
+        "empty_addr_norm": 0.0,
+        "has_addr_first_num": 0.999999,
+        "has_addr_admin": 0.929403
+      }
+    },
+    "train_s2": {
+      "ALL": {
+        "rows": 5034616,
+        "empty_name_core": 7e-06,
+        "empty_addr_norm": 0.033561,
+        "has_addr_first_num": 0.906459,
+        "has_addr_admin": 0.888272
+      },
+      "India": {
+        "rows": 2017799,
+        "empty_name_core": 1.3e-05,
+        "empty_addr_norm": 0.028668,
+        "has_addr_first_num": 0.913165,
+        "has_addr_admin": 0.875898
+      },
+      "US": {
+        "rows": 3016817,
+        "empty_name_core": 2e-06,
+        "empty_addr_norm": 0.036834,
+        "has_addr_first_num": 0.901974,
+        "has_addr_admin": 0.896548
+      }
+    },
+    "train_s3": {
+      "ALL": {
+        "rows": 5285603,
+        "empty_name_core": 5e-06,
+        "empty_addr_norm": 0.033282,
+        "has_addr_first_num": 0.907994,
+        "has_addr_admin": 0.824888
+      },
+      "India": {
+        "rows": 2115547,
+        "empty_name_core": 9e-06,
+        "empty_addr_norm": 0.0307,
+        "has_addr_first_num": 0.900555,
+        "has_addr_admin": 0.868437
+      },
+      "US": {
+        "rows": 3170056,
+        "empty_name_core": 2e-06,
+        "empty_addr_norm": 0.035005,
+        "has_addr_first_num": 0.912959,
+        "has_addr_admin": 0.795826
+      }
+    },
+    "test_s1": {
+      "ALL": {
+        "rows": 1732544,
+        "empty_name_core": 0.0,
+        "empty_addr_norm": 0.0,
+        "has_addr_first_num": 0.958536,
+        "has_addr_admin": 0.768933
+      },
+      "France": {
+        "rows": 259452,
+        "empty_name_core": 0.0,
+        "empty_addr_norm": 0.0,
+        "has_addr_first_num": 0.995803,
+        "has_addr_admin": 0.0
+      },
+      "India": {
+        "rows": 809986,
+        "empty_name_core": 0.0,
+        "empty_addr_norm": 0.0,
+        "has_addr_first_num": 0.912655,
+        "has_addr_admin": 0.884293
+      },
+      "US": {
+        "rows": 663106,
+        "empty_name_core": 0.0,
+        "empty_addr_norm": 0.0,
+        "has_addr_first_num": 0.999998,
+        "has_addr_admin": 0.92888
+      }
+    },
+    "test_s2": {
+      "ALL": {
+        "rows": 4887273,
+        "empty_name_core": 5e-06,
+        "empty_addr_norm": 0.026479,
+        "has_addr_first_num": 0.926742,
+        "has_addr_admin": 0.763142
+      },
+      "France": {
+        "rows": 703378,
+        "empty_name_core": 0.0,
+        "empty_addr_norm": 0.030619,
+        "has_addr_first_num": 0.931483,
+        "has_addr_admin": 0.0
+      },
+      "India": {
+        "rows": 2312565,
+        "empty_name_core": 8e-06,
+        "empty_addr_norm": 0.022816,
+        "has_addr_first_num": 0.930317,
+        "has_addr_admin": 0.881385
+      },
+      "US": {
+        "rows": 1871330,
+        "empty_name_core": 3e-06,
+        "empty_addr_norm": 0.029448,
+        "has_addr_first_num": 0.920543,
+        "has_addr_admin": 0.90386
+      }
+    },
+    "test_s3": {
+      "ALL": {
+        "rows": 5082316,
+        "empty_name_core": 5e-06,
+        "empty_addr_norm": 0.026779,
+        "has_addr_first_num": 0.924937,
+        "has_addr_admin": 0.720236
+      },
+      "France": {
+        "rows": 731615,
+        "empty_name_core": 0.0,
+        "empty_addr_norm": 0.029443,
+        "has_addr_first_num": 0.933848,
+        "has_addr_admin": 0.0
+      },
+      "India": {
+        "rows": 2405000,
+        "empty_name_core": 9e-06,
+        "empty_addr_norm": 0.024632,
+        "has_addr_first_num": 0.91879,
+        "has_addr_admin": 0.874222
+      },
+      "US": {
+        "rows": 1945701,
+        "empty_name_core": 1e-06,
+        "empty_addr_norm": 0.02843,
+        "has_addr_first_num": 0.929185,
+        "has_addr_admin": 0.80072
+      }
+    }
+  }
+}

@@ -52,6 +52,54 @@ def peak_mem_gb() -> Optional[float]:
     return round(peak / 2**30, 2)
 
 
+class TreeMemWatch:
+    """Samples the RSS of this process + all child processes (e.g. a multiprocessing Pool) in a thread.
+
+    Use as a context manager; .peak_gb is the highest total seen, .total_gb the machine's RAM.
+    Without psutil both stay None.
+    """
+
+    def __init__(self, interval: float = 0.5):
+        self.interval, self.peak_gb, self.total_gb = interval, None, None
+        self._stop = None
+
+    def _sample(self, psutil, proc) -> float:
+        total = 0
+        for p in [proc] + proc.children(recursive=True):
+            try:
+                total += p.memory_info().rss
+            except psutil.Error:
+                pass
+        return total / 2**30
+
+    def __enter__(self):
+        try:
+            import psutil
+        except ImportError:
+            return self
+        import threading
+        proc = psutil.Process()
+        self.total_gb = round(psutil.virtual_memory().total / 2**30, 2)
+        self.peak_gb = 0.0
+        self._stop = threading.Event()
+
+        def run():
+            while not self._stop.is_set():
+                self.peak_gb = max(self.peak_gb, self._sample(psutil, proc))
+                self._stop.wait(self.interval)
+
+        self._thread = threading.Thread(target=run, daemon=True)
+        self._thread.start()
+        return self
+
+    def __exit__(self, *exc):
+        if self._stop is not None:
+            self._stop.set()
+            self._thread.join()
+            self.peak_gb = round(self.peak_gb, 2)
+        return False
+
+
 def load_test_s1_ids() -> List[str]:
     """All test S1 IDs in test_source1.tsv file order."""
     path = config.DATA_DIR / "test" / "test_source1.tsv"
