@@ -1,0 +1,25 @@
+{
+  "model": "baseline cheap_score",
+  "shards": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "n_pairs_before_one_to_one": 27098876,
+  "n_pairs_after_one_to_one": 8019208,
+  "macro_f05_without_one_to_one_same_threshold": 0.758883,
+  "threshold": 0.8,
+  "n_s1": 110440,
+  "macro_f05": 0.786737,
+  "precision": 0.80022,
+  "recall": 0.735174,
+  "per_country": {
+    "India": 0.678716,
+    "US": 0.858977
+  },
+  "macro_f05_singletons": 0.72134,
+  "macro_f05_non_singletons": 0.790651,
+  "n_pred_pairs": 351051,
+  "elapsed_s": 98.3
+}
