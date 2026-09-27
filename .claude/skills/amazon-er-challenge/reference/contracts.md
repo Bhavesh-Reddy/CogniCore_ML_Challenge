@@ -71,7 +71,7 @@ N_JOBS = max(1, os.cpu_count() - 2)
 | `work/test_shards.parquet` | s1_id, shard | splits (test S1) |
 | `work/norm/{split}_s{k}.parquet` | entity_id, source, country, name_norm, name_core, name_nospace, name_has_url, name_nonlatin, addr_norm, addr_core, addr_nums, addr_first_num, addr_admin, addr_empty | normalize |
 | `work/aliases.json` | {"admin": {variant: canonical}} learned from train pairs | aliases |
-| `work/cand/{split}/shard={i}.parquet` | s1_id, other_id, key_hits (int32 bitmask), cheap_score (float32) | blocking |
+| `work/cand/{split}/shard={i}.parquet` | s1_id, other_id, key_hits (int32 bitmask), cheap_score (float32), key_weight (float32: sum of 1/index-group-size over shared keys) | blocking |
 | `work/feat/{split}/shard={i}.parquet` | s1_id, other_id, feature columns (float32), label (int8, train only) | features |
 | `work/pred/{split}/shard={i}.parquet` | s1_id, other_id, prob (float32) | predict |
 

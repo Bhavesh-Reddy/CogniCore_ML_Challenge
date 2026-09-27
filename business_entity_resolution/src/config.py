@@ -10,6 +10,7 @@ N_SHARDS = 16          # S1 entities are split into shards by stable_hash(s1_id)
 VAL_MOD = 5            # fold = "val" if stable_hash(s1_id + "#fold") % VAL_MOD == 0 else "fit"
 TOPK = 50              # max candidates kept per S1 after blocking (tune with recall curve)
 BLOCK_CAP = 1000       # a blocking key group larger than this on either side is dropped
+PREFILTER_K = 200      # blocking stage 1: candidates per S1 kept by key rarity before cheap_score
 DUCKDB_MEMORY = "6GB"  # lower on small machines
 N_JOBS = max(1, os.cpu_count() - 2)
 

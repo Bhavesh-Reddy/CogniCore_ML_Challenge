@@ -1,0 +1,153 @@
+{
+  "split": "train",
+  "shards": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "topk": 50,
+  "block_cap": 1000,
+  "n_s1": 551323,
+  "n_pairs": 27098876,
+  "pairs_per_s1": {
+    "mean": 49.152,
+    "p50": 50.0,
+    "p95": 50.0,
+    "max": 50
+  },
+  "s1_with_zero_candidates_all": 0.000125,
+  "per_key_pairs": {
+    "K1": 8036106,
+    "K2": 9922892,
+    "K3": 11519355,
+    "K4": 4440277
+  },
+  "cross_country_pairs": 0,
+  "key_stats": {
+    "key_rows_index_raw": {
+      "K1": 23002009,
+      "K2": 45164589,
+      "K3": 92488000,
+      "K4": 10138899
+    },
+    "key_rows_query_raw": {
+      "K1": 5170351,
+      "K2": 10970518,
+      "K3": 21331788,
+      "K4": 2181704
+    },
+    "key_rows_index_kept": {
+      "K1": 14518229,
+      "K2": 30147006,
+      "K3": 57469160,
+      "K4": 6312884
+    },
+    "key_rows_query_kept": {
+      "K1": 4757675,
+      "K2": 8773169,
+      "K3": 17704404,
+      "K4": 1771091
+    },
+    "groups_dropped_over_cap": 8130,
+    "build_s": 169.5
+  },
+  "shard_runs": [
+    {
+      "shard": 0,
+      "n_s1": 138526,
+      "n_pairs_after_prefilter": 26076363,
+      "n_pairs": 6810615,
+      "join_s": 161.7,
+      "elapsed_s": 320.3
+    },
+    {
+      "shard": 1,
+      "n_s1": 137660,
+      "n_pairs_after_prefilter": 25879534,
+      "n_pairs": 6764305,
+      "join_s": 207.9,
+      "elapsed_s": 355.7
+    },
+    {
+      "shard": 2,
+      "n_s1": 137390,
+      "n_pairs_after_prefilter": 25840984,
+      "n_pairs": 6753173,
+      "join_s": 256.8,
+      "elapsed_s": 18410.0
+    },
+    {
+      "shard": 3,
+      "n_s1": 137747,
+      "n_pairs_after_prefilter": 25929242,
+      "n_pairs": 6770783,
+      "join_s": 233.8,
+      "elapsed_s": 419.4
+    }
+  ],
+  "elapsed_s": 19542.9,
+  "peak_mem_gb_all_processes": 6.76,
+  "peak_mem_gb_main": 6.76,
+  "ram_gb": 15.7,
+  "val": {
+    "shards": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "n_s1": 110440,
+    "n_true_pairs": 382111,
+    "n_cand_pairs": 5427422,
+    "recall_all": 0.907608,
+    "recall_by_country": {
+      "India": 0.85627,
+      "US": 0.941947
+    },
+    "recall_at_k": {
+      "10": 0.876418,
+      "20": 0.893123,
+      "30": 0.899783,
+      "50": 0.907608
+    },
+    "s1_with_zero_candidates": 0.000136,
+    "pairs_per_s1": {
+      "mean": 49.144,
+      "p50": 50.0,
+      "p95": 50.0,
+      "max": 50
+    },
+    "per_key": {
+      "K1": {
+        "pairs": 1612445,
+        "recall": 0.622434
+      },
+      "K2": {
+        "pairs": 1987540,
+        "recall": 0.700689
+      },
+      "K3": {
+        "pairs": 2308440,
+        "recall": 0.788991
+      },
+      "K4": {
+        "pairs": 885429,
+        "recall": 0.56135
+      }
+    },
+    "oracle_macro_f05": 0.964387
+  },
+  "recall_all": 0.907608,
+  "recall_by_country": {
+    "India": 0.85627,
+    "US": 0.941947
+  },
+  "recall_at_k": {
+    "10": 0.876418,
+    "20": 0.893123,
+    "30": 0.899783,
+    "50": 0.907608
+  },
+  "s1_with_zero_candidates": 0.000136
+}
